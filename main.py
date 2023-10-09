@@ -21,19 +21,23 @@ def text_file_to_list():
 
 def text_list_to_images():
     font = ImageFont.truetype("arial.ttf", 24)
-
+    frame = 0
     for text in test_list:
+
         x, y = (200, 150)
         img_black = Image.new(mode="RGBA", size=(x, y), color='black')
-        img_white = Image.new(mode="RGBA", size=(x, y), color='white')
+        img_grey = Image.new(mode="RGBA", size=(x, y), color='grey')
+
         draw_black = ImageDraw.Draw(img_black)
-        draw_white = ImageDraw.Draw(img_white)
-        # w, h = draw_white.textsize(text)
-        draw_black.text((x//2, y//2), text, font=font, fill='white', anchor="mm")
-        draw_white.text((x//2, y//2), text, font=font, fill='black', anchor="mm")
-        # img.show()
-        img_black.save(f"Images\{text}_black.png")
-        img_white.save(f"Images\{text}_white.png")
+        draw_grey = ImageDraw.Draw(img_grey)
+
+        draw_black.text((x//2, y//2), text, font=font, fill='grey', anchor="mm")
+        draw_grey.text((x//2, y//2), text, font=font, fill='black', anchor="mm")
+
+        img_black.save(f"Images\{frame}_black.png")
+        frame += 1
+        img_grey.save(f"Images\{frame}_white.png")
+        frame += 1
 
 
 def images_to_video():
