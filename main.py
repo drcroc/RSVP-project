@@ -1,55 +1,84 @@
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+import shutil
+import os
+import argparse
 import cv2
 import glob
 
 # F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶c̶o̶n̶v̶e̶r̶t̶i̶n̶g̶ ̶t̶e̶x̶t̶ ̶f̶r̶o̶m̶ ̶t̶e̶r̶m̶i̶n̶a̶l̶ ̶t̶o̶ ̶l̶i̶s̶t̶ ̶o̶f̶ ̶w̶o̶r̶d̶s̶,̶ ̶c̶o̶m̶m̶a̶s̶ ̶a̶n̶d̶ ̶d̶o̶t̶s̶ ̶g̶o̶ ̶t̶o̶ ̶t̶h̶e̶ ̶p̶r̶e̶v̶i̶o̶u̶s̶ ̶w̶o̶r̶d̶.̶  Completed
-# Function for converting text from a file to a list of words, commas and dots go to the previous word.
-# F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶c̶r̶e̶a̶t̶i̶n̶g̶ ̶i̶m̶a̶g̶e̶s̶ ̶w̶i̶t̶h̶ ̶t̶h̶e̶ ̶w̶o̶r̶d̶s̶ ̶f̶r̶o̶m̶ ̶t̶h̶e̶ ̶l̶i̶s̶t̶.̶ Completed
-# F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶c̶r̶e̶a̶t̶i̶n̶g̶ ̶v̶i̶d̶e̶o̶ ̶f̶r̶o̶m̶ ̶t̶h̶e̶ ̶i̶m̶a̶g̶e̶s̶.̶ Completed
-# Function for deleting the used images.
-# Need to add options for custom FPS, Resolution, Colors
+# F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶c̶o̶n̶v̶e̶r̶t̶i̶n̶g̶ ̶t̶e̶x̶t̶ ̶f̶r̶o̶m̶ ̶a̶ ̶f̶i̶l̶e̶ ̶t̶o̶ ̶a̶ ̶l̶i̶s̶t̶ ̶o̶f̶ ̶w̶o̶r̶d̶s̶,̶ ̶c̶o̶m̶m̶a̶s̶ ̶a̶n̶d̶ ̶d̶o̶t̶s̶ ̶g̶o̶ ̶t̶o̶ ̶t̶h̶e̶ ̶p̶r̶e̶v̶i̶o̶u̶s̶ ̶w̶o̶r̶d̶.  Completed
+# F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶c̶r̶e̶a̶t̶i̶n̶g̶ ̶i̶m̶a̶g̶e̶s̶ ̶w̶i̶t̶h̶ ̶t̶h̶e̶ ̶w̶o̶r̶d̶s̶ ̶f̶r̶o̶m̶ ̶t̶h̶e̶ ̶l̶i̶s̶t̶.̶  Completed
+# F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶c̶r̶e̶a̶t̶i̶n̶g̶ ̶v̶i̶d̶e̶o̶ ̶f̶r̶o̶m̶ ̶t̶h̶e̶ ̶i̶m̶a̶g̶e̶s̶.̶  Completed
+# F̶u̶n̶c̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶d̶e̶l̶e̶t̶i̶n̶g̶ ̶t̶h̶e̶ ̶u̶s̶e̶d̶ ̶i̶m̶a̶g̶e̶s̶.̶  Completed
+# N̶e̶e̶d̶ ̶t̶o̶ ̶a̶d̶d̶ ̶o̶p̶t̶i̶o̶n̶s̶ ̶f̶o̶r̶ ̶c̶u̶s̶t̶o̶m̶ ̶F̶P̶S̶,̶ ̶R̶e̶s̶o̶l̶u̶t̶i̶o̶n̶,̶ ̶C̶o̶l̶o̶r̶s̶.  Completed
 
 
 # test_list = ["Here", "is", "a", "new", "image", "example", "using"]
-# textt_list = []
+
+
+def arg_check():
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-f", "--file", required=False, default='', help="Specify the file from which you want to read. If left empty it will ask you to enter the text. (Not recommended for large projects)")
+    argParser.add_argument("-fps", "--FramesPerSecond", required=False, type=float,  default=6,  help="Specify how many images per second you want to read. The number is (float) between [1..30]. By default is 10. ")
+    argParser.add_argument("-c", "--color", required=False,  default='black-white', help="Specify color scheme. By default is black-white  [BG-Text].")
+    argParser.add_argument("-i", "--invert", required=False, choices=['off','on'], default='off', help="Creates reverse frame every second frame. By default (OFF) [Boolean].")
+    args = vars(argParser.parse_args())
+    return args
 
 
 def terminal_text_to_list():
     print("Enter your text: ")
-    text_list = input().split(' ')
+    # text_list = input().split(' ')
+    text_list = input().replace('\n', ' ').split(' ')
     return text_list
 
 
-def text_file_to_list():
-    pass
+def text_file_to_list(opt):
+    with open(opt['file'], mode='rt') as f:
+        text_list = f.read().replace('\n', ' ').split(' ')
+    return text_list
 
 
-def text_list_to_images(test_list):
+def text_list_to_images(test_list, opt=None):
+    backGroundColor, textColor = '', ''
+    if opt and opt['color']:
+        backGroundColor = opt['color'].split('-')[0]
+        textColor = opt['color'].split('-')[1]
+
     font = ImageFont.truetype("arial.ttf", 192)
     frame = 0
+    # x, y = (200, 150)
+    x, y = (1920, 1080)
+    if not os.path.exists("Images"):
+        os.makedirs("Images")
+
     for text in test_list:
-        # x, y = (200, 150)
-        x, y = (1920, 1080)
-        img_black = Image.new(mode="RGBA", size=(x, y), color='black')
-        img_grey = Image.new(mode="RGBA", size=(x, y), color='grey')
-
-        draw_black = ImageDraw.Draw(img_black)
-        draw_grey = ImageDraw.Draw(img_grey)
-
-        draw_black.text((x // 2, y // 2), text, font=font, fill='grey', anchor="mm")
-        draw_grey.text((x // 2, y // 2), text, font=font, fill='black', anchor="mm")
-
-        img_black.save(f"Images\{frame}_black.png")
-        frame += 1
-        img_grey.save(f"Images\{frame}_white.png")
+        img_normal = Image.new(mode="RGBA", size=(x, y), color=f'{backGroundColor}')
+        draw_black = ImageDraw.Draw(img_normal)
+        draw_black.text((x // 2, y // 2), text, font=font, fill=f'{textColor}', anchor="mm")
+        # img_normal.save(f"Images\{frame}_normal.png")
+        img_normal.save(os.path.join("Images", f"{frame}_normal.png"))
         frame += 1
 
+        if opt and opt.get('invert') == 'on':
+            img_inverted = Image.new(mode="RGBA", size=(x, y), color=f'{textColor}')
+            draw_grey = ImageDraw.Draw(img_inverted)
+            draw_grey.text((x // 2, y // 2), text, font=font, color=f'{backGroundColor}', anchor="mm")
+            # img_inverted.save(f"Images\{frame}_inverted.png")
+            img_inverted.save(os.path.join("Images", f"{frame}_inverted.png"))
+            frame += 1
 
-def images_to_video():
+
+def images_to_video(opt=None):
+    fps = 0.0
+    if opt:
+        fps = opt['FramesPerSecond']
+
     img_array = []
     width, height = 0, 0
+
     for filename in glob.glob('Images\*.png'):
         img = cv2.imread(filename)
         height, width, layers = img.shape
@@ -57,7 +86,7 @@ def images_to_video():
 
     size = (width, height)
     fourcc = cv2.VideoWriter.fourcc(*'mp4v')
-    out = cv2.VideoWriter('video.mp4', fourcc=fourcc, fps=12, frameSize=size)
+    out = cv2.VideoWriter('video.mp4', fourcc=fourcc, fps=fps, frameSize=size)
 
     for i in range(len(img_array)):
         out.write(img_array[i])
@@ -65,13 +94,23 @@ def images_to_video():
 
 
 def image_cleaner():
-    pass
+    if os.path.exists("Images"):
+        try:
+            shutil.rmtree("Images")
+        except Exception as e:
+            print(f"Error deleting folder: {e}")
 
 
 def main():
-    textt_list = terminal_text_to_list()
-    text_list_to_images(textt_list)
-    images_to_video()
+    options = arg_check()
+    if options['file'] != '':
+        textt_list = text_file_to_list(options)
+    else:
+        textt_list = terminal_text_to_list()
+
+    text_list_to_images(textt_list, options)
+    images_to_video(options)
+    image_cleaner()
 
 
 if __name__ == '__main__':
