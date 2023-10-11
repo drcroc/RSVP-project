@@ -20,10 +20,13 @@ import glob
 
 def arg_check():
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("-f", "--file", required=False, default='', help="Specify the file from which you want to read. If left empty it will ask you to enter the text. (Not recommended for large projects)")
-    argParser.add_argument("-fps", "--FramesPerSecond", required=False, type=float,  default=6,  help="Specify how many images per second you want to read. The number is (float) between [1..30]. By default is 10. ")
-    argParser.add_argument("-c", "--color", required=False,  default='black-white', help="Specify color scheme. By default is black-white  [BG-Text].")
-    argParser.add_argument("-i", "--invert", required=False, choices=['off','on'], default='off', help="Creates reverse frame every second frame. By default (OFF) [Boolean].")
+    argParser.add_argument("-f", "--file", required=False, default='', help="Specify the file you want to read from. If left blank, it will ask you to enter the text (Not recommended for large projects).")
+    argParser.add_argument("-fps", "--FramesPerSecond", required=False, type=float,  default=6,  help="Specify how many images per second you want to read. The number is (float) between [1..30]. Default [10]. ")
+    argParser.add_argument("-c", "--color", required=False,  default='black-white', help="Specify color scheme. By default is black-white [BG-Text].")
+    argParser.add_argument("-i", "--invert", required=False, choices=['off','on'], default='off', help="Creates a reverse frame every second frame. Default [off].")
+    argParser.add_argument("-res", "--resolution", required=False, default='1920,1080', help="Image and video resolution. This must be provided as a comma-separated string. Default [1920,1080]")
+    argParser.add_argument("-font",required=False, default='arial.ttf', help="The font of the characters. You will have to put the extension of the font as well. Default [arial.ttf]")
+    argParser.add_argument("-tz", "--text_size", required=False, default=192, help="The size of the characters. Default [192]")
     args = vars(argParser.parse_args())
     return args
 
@@ -47,10 +50,11 @@ def text_list_to_images(test_list, opt=None):
         backGroundColor = opt['color'].split('-')[0]
         textColor = opt['color'].split('-')[1]
 
-    font = ImageFont.truetype("arial.ttf", 192)
+    # font = ImageFont.truetype("arial.ttf", 192)
+    font = ImageFont.truetype(opt['font'], opt['text_size'])
     frame = 0
     # x, y = (200, 150)
-    x, y = (1920, 1080)
+    x, y = opt['resolution'].split(',')
     if not os.path.exists("Images"):
         os.makedirs("Images")
 
