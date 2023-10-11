@@ -26,7 +26,7 @@ def arg_check():
     argParser.add_argument("-i", "--invert", required=False, choices=['off','on'], default='off', help="Creates a reverse frame every second frame. Default [off].")
     argParser.add_argument("-res", "--resolution", required=False, default='1920,1080', help="Image and video resolution. This must be provided as a comma-separated string. Default [1920,1080]")
     argParser.add_argument("-font",required=False, default='arial.ttf', help="The font of the characters. You will have to put the extension of the font as well. Default [arial.ttf]")
-    argParser.add_argument("-tz", "--text_size", required=False, default=192, help="The size of the characters. Default [192]")
+    argParser.add_argument("-tz", "--text_size", required=False, type=int, default=192, help="The size of the characters. Default [192]")
     args = vars(argParser.parse_args())
     return args
 
@@ -54,7 +54,8 @@ def text_list_to_images(test_list, opt=None):
     font = ImageFont.truetype(opt['font'], opt['text_size'])
     frame = 0
     # x, y = (200, 150)
-    x, y = opt['resolution'].split(',')
+    x, y = map(int, opt['resolution'].split(','))
+
     if not os.path.exists("Images"):
         os.makedirs("Images")
 
