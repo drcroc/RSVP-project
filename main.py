@@ -61,16 +61,16 @@ def text_list_to_images(test_list, opt=None):
 
     for text in test_list:
         img_normal = Image.new(mode="RGBA", size=(x, y), color=f'{backGroundColor}')
-        draw_black = ImageDraw.Draw(img_normal)
-        draw_black.text((x // 2, y // 2), text, font=font, fill=f'{textColor}', anchor="mm")
+        draw_normal = ImageDraw.Draw(img_normal)
+        draw_normal.text((x // 2, y // 2), text, font=font, fill=f'{textColor}', anchor="mm")
         # img_normal.save(f"Images\{frame}_normal.png")
         img_normal.save(os.path.join("Images", f"{frame}_normal.png"))
         frame += 1
 
         if opt and opt.get('invert') == 'on':
             img_inverted = Image.new(mode="RGBA", size=(x, y), color=f'{textColor}')
-            draw_grey = ImageDraw.Draw(img_inverted)
-            draw_grey.text((x // 2, y // 2), text, font=font, color=f'{backGroundColor}', anchor="mm")
+            draw_inverted = ImageDraw.Draw(img_inverted)
+            draw_inverted.text((x // 2, y // 2), text, font=font, fill=f'{backGroundColor}', anchor="mm")
             # img_inverted.save(f"Images\{frame}_inverted.png")
             img_inverted.save(os.path.join("Images", f"{frame}_inverted.png"))
             frame += 1
@@ -83,8 +83,9 @@ def images_to_video(opt=None):
 
     img_array = []
     width, height = 0, 0
-
-    for filename in glob.glob('Images\*.png'):
+    image_list = glob.glob('Images\*.png')
+    image_list.sort(key=os.path.getmtime)
+    for filename in image_list:
         img = cv2.imread(filename)
         height, width, layers = img.shape
         img_array.append(img)
