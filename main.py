@@ -1,6 +1,7 @@
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+import re
 import shutil
 import os
 import argparse
@@ -21,7 +22,7 @@ import glob
 def arg_check():
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-f", "--file", required=False, default='', help="Specify the file you want to read from. If left blank, it will ask you to enter the text (Not recommended for large projects).")
-    argParser.add_argument("-fps", "--FramesPerSecond", required=False, type=float,  default=6,  help="Specify how many images per second you want to read. The number is (float) between [1..30]. Default [10]. ")
+    argParser.add_argument("-wps", "--WordsPerSecond", required=False, type=float,  default=6,  help="Specify how many words per second you want to read. The number is (float) between [1..30]. Default [10]. ")
     argParser.add_argument("-c", "--color", required=False,  default='black-white', help="Specify color scheme. By default is black-white [BG-Text].")
     argParser.add_argument("-i", "--invert", required=False, choices=['off','on'], default='off', help="Creates a reverse frame every second frame. Default [off].")
     argParser.add_argument("-res", "--resolution", required=False, default='1920,1080', help="Image and video resolution. This must be provided as a comma-separated string. Default [1920,1080]")
@@ -77,9 +78,9 @@ def text_list_to_images(test_list, opt=None):
 
 
 def images_to_video(opt=None):
-    fps = 0.0
-    if opt:
-        fps = opt['FramesPerSecond']
+    wps = opt['WordsPerSecond']
+    if opt['invert'] == 'on':
+        wps = wps * 2
 
     img_array = []
     width, height = 0, 0
@@ -92,7 +93,7 @@ def images_to_video(opt=None):
 
     size = (width, height)
     fourcc = cv2.VideoWriter.fourcc(*'mp4v')
-    out = cv2.VideoWriter('video.mp4', fourcc=fourcc, fps=fps, frameSize=size)
+    out = cv2.VideoWriter('video.mp4', fourcc=fourcc, fps=wps, frameSize=size)
 
     for i in range(len(img_array)):
         out.write(img_array[i])
